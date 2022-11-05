@@ -189,8 +189,6 @@ sample_means <- colMeans(matrix(rpois(n*K, lambda = mu), nrow=n))
 ```{r}
 mu <- mu# change this!
 sigma <- mu**(1/2)# change this!
-sigma
-mu
 ```
 
 #### We can now plot ecdf and cdf
