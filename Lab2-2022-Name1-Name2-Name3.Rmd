@@ -60,6 +60,8 @@ $$
 
 #### First, we set the **id** of the team and define the probability $p$ and the generator and parity-check matrices $G$ and $H$
 
+(G%\*%H) %%2
+
 ```{r}
 # your team id number 
                           ###
@@ -75,12 +77,12 @@ G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 		0, 1, 1, 0, 0, 1, 1,
 		0, 0, 0, 1, 1, 1, 1), nrow = 3, byrow = TRUE))
-cat("The matrix G is: \n")
-G
-cat("The matrix H is: \n")
-H
-cat("The product GH must be zero: \n")
-(G%*%H) %%2
+# caG
+# cat("The matrix H is: \n")
+# H
+# cat("The product GH must be zero: \n")
+# (G%*%H) %%2t("The matrix G is: \n")
+
 ```
 
 #### Next, generate the messages
@@ -91,10 +93,8 @@ cat("The product GH must be zero: \n")
 message_generator <- function(N) {
   matrix(sample(c(0,1), 4*N, replace = TRUE), nrow = N)
 }  
-messages <- message_generator(4)
+messages <- message_generator(1000)
 codewords <- (messages %*% G) %% 2
-messages
-codewords
 ```
 
 #### Generate random errors; do not forget that they occur with probability $p$! Next, generate the received messages
@@ -116,17 +116,41 @@ errors_generator <- function(messages) {
 
 #  errors <- ...
  received <- errors_generator(codewords)
- received
 
 ```
 
 The next steps include detecting the errors in the received messages, correcting them, and then decoding the obtained messages. After this, you can continue with calculating all the quantities of interest
 
 ```{r}
-detect_errors <- function(message) {
-  for (bit in 1:length())
+decoding <- function(received) {
+  corrected <- (received %*% H) %% 2
+  for (row in 1:nrow(corrected)) {
+    idx <- 1*corrected[row, 1] + 2*corrected[row, 2] + 4*corrected[row, 3]
+    if (idx != 0) {
+      received[row, idx] <- as.integer(!received[row, idx])
+    }
+    # received[row] <- received[row][c(3, 5, 6, 7)]
+  }
+  received <- received[, -c(1, 2, 4)]
+  return (received)
 }
 
+decoded <- decoding(received)
+```
+
+```{r}
+evaluate <- function(messages, decoded){
+  counter <- 0
+  for(row in 1:nrow(messages)){
+    if(messages[row]!=decoded[row]){
+      counter <- counter+1
+    }
+  }
+  return(counter/nrow(messages))
+}
+
+measurament_error <- evaluate(messages,decoded)
+measurament_error
 ```
 
 **Do not forget to include several sentences summarizing your work and the conclusions you have made!**
