@@ -1,6 +1,6 @@
 ---
 title: 'P&S-2022: Lab assignment 2'
-author: "Sofiia Folvarochna, Maslenchenko Oleksandra, Andrea Kozlovskyy"
+author: "Sofiya Folvarochna, Maslenchenko Oleksandra, Andrea Kozlovskyi"
 output:
   html_document:
     df_print: paged
@@ -279,7 +279,7 @@ mu3 <- mean(sample_means3)
 sigma3 <- sd(sample_means3)
 ```
 
-#### We can now plot ecdf and cdf
+#### We can now plot e.c.d.f. and c.d.f.
 
 ```{r}
 xlims_1 <- c(mu1-3*sigma1,mu1+3*sigma1)
@@ -371,8 +371,6 @@ markov_bound(mean(sum_values))
 
 #### First, generate samples an sample means:
 
-sample_means \<- colMeans(matrix(rexp(n\*K, rate = 1/nu1), nrow=n))
-
 ```{r}
 nu1 <- 20  # change this!
 K <- 1e3
@@ -395,7 +393,7 @@ mu3 <- mean(sample_means3)# change this!
 sigma3 <- sd(sample_means3) # change this!
 ```
 
-#### We can now plot ecdf and cdf2
+#### We can now plot e.c.d.f. and c.d.f.
 
 ```{r}
 xlims_1 <- c(mu1-3*sigma1,mu1+3*sigma1)
@@ -429,6 +427,8 @@ plot(Fs_3,
      main = "Comparison of ecdf and cdf")
 curve(pnorm(x, mean = mu3, sd = sigma3), col = "red", lwd = 2, add = TRUE)
 ```
+
+**Considering cases n = 5, n = 10, n = 50. Here we can see that as n becomes larger the difference between c.d.f and e.c.d.f. becomes smaller. From the plots we can see that the e.c.d.f. becomes more and more similar to the c.d.f.**
 
 ```{r}
 x <- seq(min(sample_means1),max(sample_means1), by = .01)
