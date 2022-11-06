@@ -53,12 +53,14 @@ $$
 
 1.  Simulate the encoding-transmission-decoding process $N$ times and find the estimate $\hat p$ of the probability $p^*$ of correct transmission of a single message $\mathbf{m}$. Comment why, for large $N$, $\hat p$ is expected to be close to $p^*$.
 
-    $$p^* = 0.9^7 + 7 \cdot 0.9^6 \cdot 0.1 \approx 0.850306$$
-    \
+    $$p^* = 0.9^7 + 7 \cdot 0.9^6 \cdot 0.1 \approx 0.850306$$\
     According to Weak Law of Large Numbers as $n \to \infty$ the difference $\hat p - p^*$ becomes smaller and converges to 0.
 
-2.   By estimating the standard deviation of the corresponding indicator of success by the standard error of your sample and using the CLT, predict the \emph{confidence} interval $(p^*-\varepsilon, p^* + \varepsilon)$, in which the estimate $\hat p$ falls with probability at least $0.95$.
+2.  By estimating the standard deviation of the corresponding indicator of success by the standard error of your sample and using the CLT, predict the \emph{confidence} interval $(p^*-\varepsilon, p^* + \varepsilon)$, in which the estimate $\hat p$ falls with probability at least $0.95$.
 
+```{=html}
+<!-- -->
+```
     $$
     M_n = \hat p \\ $$ The probability of correct transmission of a single message: $$\mu = p^* \\ $$ To calculate the standart deviation we need need to calculate the variance of the corresponding indicator of success and take the square root. $$
     I = \begin{cases}
@@ -198,6 +200,52 @@ accuracy
     -   repeat this $K$ times to get the sample $\mathbf{s}=(s_1,\dots,s_K)$ of sums;
 
     -   calculate the number of elements of the sample which are less than critical value ($8 \times 10^8$) and calculate the empirical probability; comment whether it is close to the desired level $0.95$
+
+First, we have found this number experimentally and saw that for all $n \le 25$ the empirical probability is 1 and 0 otherwise, because all 1000 sums are less than $8 \cdot 10^8$ and when $n \ge 26$ all elements of sample are bigger than $8 \cdot 10^8$. We can prove it using Central Limit Theorem:
+
+$$
+P(M_n -m \mu \le 8 \cdot 10^8)
+$$
+
+$$
+P(\frac{S_n - \mu \cdot n}{\sigma \cdot \sqrt{n}} \le \frac{8 \cdot 10^8 - \mu \cdot n}{\sigma \cdot \sqrt{n}})
+$$
+
+$$
+\Phi(\frac{8 \cdot 10^8 = \mu \cdot n}{\sigma \cdot \sqrt{n}}) \ge 0.95
+$$
+
+$$
+\frac{8 \cdot 10^8 - 31982449 \cdot n}{5655.303 \cdot \sqrt{n}} \ge 1.65
+$$
+
+$$
+n \le 25
+$$
+
+As we can see our results are similar to which we found using CLT. To obtain elements which are smaller than $8 \cdot 10^8$ n should be smaller than or equal to 25.
+
+Now we can compare our results to ones which we can obtain using Markov inequality:
+
+$$
+P(S_n \le 8 \cdot 10^8) =  1 - P(S_n \ge 8 \cdot 10^8) \ge 0.95
+$$
+
+$$
+-P(S_n \ge 8 \cdot 10^8) \ge -0.05
+$$
+
+$$
+P(S_n \ge 8 \cdot 10^8) \le 0.05
+$$
+
+$$
+\frac{n \cdot 31982449}{8 \cdot 10^8} \le 0.05
+$$
+
+$$
+n \le 1
+$$
 
 ```{r}
 # calculating lambda, mu and finding sample means for n = 5, n = 10 and n = 50
