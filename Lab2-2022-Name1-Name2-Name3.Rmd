@@ -58,23 +58,29 @@ $$
 
 2.  By estimating the standard deviation of the corresponding indicator of success by the standard error of your sample and using the CLT, predict the \emph{confidence} interval $(p^*-\varepsilon, p^* + \varepsilon)$, in which the estimate $\hat p$ falls with probability at least $0.95$.
 
-```{=html}
-<!-- -->
-```
-    $$
-    M_n = \hat p \\ $$ The probability of correct transmission of a single message: $$\mu = p^* \\ $$ To calculate the standart deviation we need need to calculate the variance of the corresponding indicator of success and take the square root. $$
-    I = \begin{cases}
-    1 & p^* \\
-    0 & 1-p^*
-    \end{cases} \\
-    E(I) = p^* \\
-    E(I^2) = p^* \\
-    Var(I) = E(I^2) - E(I)^2 = p^* - (p^*)^2 = p^* \cdot (1 - p^*) \\
-    \sigma = \sqrt{Var(I)} = \sqrt{p ^* \cdot (1 - p^*)} \approx \sqrt{0.12729} \approx 0.3568 \\$$ Here we will use Central Limit Theorem to find the half-length $\varepsilon$ of the confidence interval $(\hat p - \varepsilon; \hat p + \varepsilon)$ : $$P(\hat p - \epsilon \le p^* \le \hat p + \epsilon) = P( - \epsilon \le p^* - \hat p \le \epsilon) = P( - \epsilon \le _( \hat p - p^*) \le \epsilon) = \\
-    = P(- \frac{\epsilon \cdot \sqrt{N}}{\sigma} \le - \frac{\epsilon \cdot \sqrt{N} \cdot (\hat p - p^*)}{\sigma} \le \frac{\epsilon \cdot \sqrt{N}}{\sigma}) = \\ = \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) - \Phi(- \frac{\epsilon \cdot \sqrt{N}}{\sigma}) - 1 = 2 \cdot \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) - 1 = 0.95 \\
-    \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) = 0.975 \\$$ Using standart normal table: $$\frac{\epsilon \cdot \sqrt{N}}{\sigma} = 1.96 \\
-    \frac{\epsilon \cdot \sqrt{N}}{0.3568} = 1.96 \\
-    \epsilon = \frac{0.699328}{\sqrt{N}} \\$$
+$$
+M_n = \hat p
+$$
+
+The probability of correct transmission of a single message:
+
+$$
+\mu = p^*  
+$$
+
+To calculate the standart deviation we need need to calculate the variance of the corresponding indicator of success and take the square root.
+
+$$
+I = \begin{cases}1 & p^* \\0 & 1-p^*\end{cases} \\E(I) = p^* \\E(I^2) = p^* \\Var(I) = E(I^2) - E(I)^2 = p^* - (p^*)^2 = p^* \cdot (1 - p^*) \\\sigma = \sqrt{Var(I)} = \sqrt{p ^* \cdot (1 - p^*)} \approx \sqrt{0.12729} \approx 0.3568 \\
+$$ Here we will use Central Limit Theorem to find the half-length $\varepsilon$ of the confidence interval $(\hat p - \varepsilon; \hat p + \varepsilon)$ :
+
+$$
+P(\hat p - \epsilon \le p^* \le \hat p + \epsilon) = P( - \epsilon \le p^* - \hat p \le \epsilon) = P( - \epsilon \le _( \hat p - p^*) \le \epsilon) = \\= P(- \frac{\epsilon \cdot \sqrt{N}}{\sigma} \le - \frac{\epsilon \cdot \sqrt{N} \cdot (\hat p - p^*)}{\sigma} \le \frac{\epsilon \cdot \sqrt{N}}{\sigma}) = \\ = \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) - \Phi(- \frac{\epsilon \cdot \sqrt{N}}{\sigma}) - 1 = 2 \cdot \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) - 1 = 0.95 \\\Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) = 0.975
+$$ Using standard normal table:
+
+$$
+\frac{\epsilon \cdot \sqrt{N}}{\sigma} = 1.96 \\\frac{\epsilon \cdot \sqrt{N}}{0.3568} = 1.96 \\\epsilon = \frac{0.699328}{\sqrt{N}}
+$$
 
 3.  What choice of $N$ guarantees that $\varepsilon \le 0.03$?
 
