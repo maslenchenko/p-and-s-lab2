@@ -169,6 +169,24 @@ evaluate <- function(messages, decoded){
 ```
 
 ```{r}
+
+count_k <- function(messages, decoded){
+  copy <- messages
+  copy <- cbind(copy, 0)
+  for(row in 1:nrow(messages)){
+    if(!identical(messages[row,],decoded[row,])){
+      for(idx in range(1:4)){
+        if(messages[row, idx] != decoded[row, idx]){
+          copy[row, 5] <- copy[row, 5] + 1
+        }
+      }
+    }
+  }
+  return(copy)
+}
+```
+
+```{r}
 message_generator <- function(N) {
   matrix(sample(c(0,1), 4*N, replace = TRUE), nrow = N)
 }  
@@ -179,6 +197,17 @@ received <- errors_generator(codewords)
 decoded <- decoding(received)
 accuracy<- evaluate(messages,decoded)
 accuracy
+```
+```{r}
+test <- count_k(messages, decoded)
+temp <- test[,5]
+h <- hist(temp,
+     main = "Distribution of number of errors",
+     xlab = 'Number of errors in a single message',
+     xlim=c(0,4),
+     ylim = c(0, 10000),
+     col = 'blue',
+     border = 'black')
 ```
 
 **Do not forget to include several sentences summarizing your work and the conclusions you have made!**
