@@ -1,6 +1,6 @@
 ---
 title: 'P&S-2022: Lab assignment 2'
-author: "Name1, Name2, Name3"
+author: "Sofiia Folvarochna, Maslenchenko Oleksandra, Andrea Kozlovskyy"
 output:
   html_document:
     df_print: paged
@@ -51,9 +51,36 @@ $$
 
 #### Assume that each bit in the transmission $\mathbf{c} \mapsto \mathbf{r}$ gets corrupted independently of the others with probability $p = \mathtt{id}/100$, where $\mathtt{id}$ is your team number. Your task is the following one.
 
-1.  Simulate the encoding-transmission-decoding process $N$ times and find the estimate $\hat p$ of the probability $p^*$ of correct transmission of a single message $\mathbf{m}$. Comment why, for large $N$, $\hat p$ is expected to be close to $p^*$.\
-2.  By estimating the standard deviation of the corresponding indicator of success by the standard error of your sample and using the CLT, predict the \emph{confidence} interval $(p^*-\varepsilon, p^* + \varepsilon)$, in which the estimate $\hat p$ falls with probability at least $0.95$.\
-3.  What choice of $N$ guarantees that $\varepsilon \le 0.03$?\
+1.  Simulate the encoding-transmission-decoding process $N$ times and find the estimate $\hat p$ of the probability $p^*$ of correct transmission of a single message $\mathbf{m}$. Comment why, for large $N$, $\hat p$ is expected to be close to $p^*$.
+
+    $$p^* = 0.9^7 + 7 \cdot 0.9^6 \cdot 0.1 \approx 0.850306$$
+    \
+    According to Weak Law of Large Numbers as $n \to \infty$ the difference $\hat p - p^*$ becomes smaller and converges to 0.
+
+2.   By estimating the standard deviation of the corresponding indicator of success by the standard error of your sample and using the CLT, predict the \emph{confidence} interval $(p^*-\varepsilon, p^* + \varepsilon)$, in which the estimate $\hat p$ falls with probability at least $0.95$.
+
+    $$
+    M_n = \hat p \\ $$ The probability of correct transmission of a single message: $$\mu = p^* \\ $$ To calculate the standart deviation we need need to calculate the variance of the corresponding indicator of success and take the square root. $$
+    I = \begin{cases}
+    1 & p^* \\
+    0 & 1-p^*
+    \end{cases} \\
+    E(I) = p^* \\
+    E(I^2) = p^* \\
+    Var(I) = E(I^2) - E(I)^2 = p^* - (p^*)^2 = p^* \cdot (1 - p^*) \\
+    \sigma = \sqrt{Var(I)} = \sqrt{p ^* \cdot (1 - p^*)} \approx \sqrt{0.12729} \approx 0.3568 \\$$ Here we will use Central Limit Theorem to find the half-length $\varepsilon$ of the confidence interval $(\hat p - \varepsilon; \hat p + \varepsilon)$ : $$P(\hat p - \epsilon \le p^* \le \hat p + \epsilon) = P( - \epsilon \le p^* - \hat p \le \epsilon) = P( - \epsilon \le _( \hat p - p^*) \le \epsilon) = \\
+    = P(- \frac{\epsilon \cdot \sqrt{N}}{\sigma} \le - \frac{\epsilon \cdot \sqrt{N} \cdot (\hat p - p^*)}{\sigma} \le \frac{\epsilon \cdot \sqrt{N}}{\sigma}) = \\ = \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) - \Phi(- \frac{\epsilon \cdot \sqrt{N}}{\sigma}) - 1 = 2 \cdot \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) - 1 = 0.95 \\
+    \Phi(\frac{\epsilon \cdot \sqrt{N}}{\sigma}) = 0.975 \\$$ Using standart normal table: $$\frac{\epsilon \cdot \sqrt{N}}{\sigma} = 1.96 \\
+    \frac{\epsilon \cdot \sqrt{N}}{0.3568} = 1.96 \\
+    \epsilon = \frac{0.699328}{\sqrt{N}} \\$$
+
+3.  What choice of $N$ guarantees that $\varepsilon \le 0.03$?
+
+    $$\frac{0.699328}{\sqrt{N}} \le 0.03 \\
+    \sqrt{N} \ge 23.3 \\
+    N \ge 543
+    $$\
+
 4.  Draw the histogram of the number $k = 0,1,2,3,4$ of errors while transmitting a $4$-digit binary message. Do you think it is one of the known distributions?
 
 #### You can (but do not have to) use the chunks we prepared for you
@@ -63,10 +90,7 @@ $$
 (G%\*%H) %%2
 
 ```{r}
-# your team id number 
-                          ###
-id <- 10                  ### Change to the correct id!
-                          ###
+id <- 10
 set.seed(id)
 p <- id/100
 # matrices G and H
@@ -77,12 +101,10 @@ G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 		0, 1, 1, 0, 0, 1, 1,
 		0, 0, 0, 1, 1, 1, 1), nrow = 3, byrow = TRUE))
-# caG
 # cat("The matrix H is: \n")
 # H
 # cat("The product GH must be zero: \n")
 # (G%*%H) %%2t("The matrix G is: \n")
-
 ```
 
 #### Next, generate the messages
@@ -90,6 +112,7 @@ H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 #### Generate random errors; do not forget that they occur with probability $p$! Next, generate the received message
 
 ```{r}
+# for each bit a random float number from 0 to 1 is generated and then if the value is less than probability p the value of bit is changed to the opposite 
 errors_generator <- function(messages) {
   for (row in 1:nrow(messages)) {
     for (bit in 1:ncol(messages)) {
@@ -103,14 +126,13 @@ errors_generator <- function(messages) {
   }
   return (messages)
 }
-#  errors <- ...
-
-
 ```
 
 The next steps include detecting the errors in the received messages, correcting them, and then decoding the obtained messages. After this, you can continue with calculating all the quantities of interest
 
 ```{r}
+# for each 7-bit message a syndrome vector is calculated in in case its value does equal to (0, 0, 0)  the corresponding bit is corrected 
+# then the parity bits columns are deleted and decoded and corrected 4-bit messages are obtained
 decoding <- function(received) {
   corrected <- (received %*% H) %% 2
   for (row in 1:nrow(corrected)) {
@@ -118,16 +140,15 @@ decoding <- function(received) {
     if (idx != 0) {
       received[row, idx] <- as.integer(!received[row, idx])
     }
-    # received[row] <- received[row][c(3, 5, 6, 7)]
   }
   received <- received[, -c(1, 2, 4)]
   return (received)
 }
-
-
 ```
 
 ```{r}
+# comparing original messages and decoded ones
+# ratio of correctly and incorrectly transmitted ones is calculated
 evaluate <- function(messages, decoded){
   counter <- 0
   for(row in 1:nrow(messages)){
@@ -137,8 +158,6 @@ evaluate <- function(messages, decoded){
   }
   return(counter/(nrow(messages)))
 }
-
-
 ```
 
 ```{r}
@@ -181,8 +200,9 @@ accuracy
     -   calculate the number of elements of the sample which are less than critical value ($8 \times 10^8$) and calculate the empirical probability; comment whether it is close to the desired level $0.95$
 
 ```{r}
-lambda <- log(2)/949864255.2  # change this!
-N <- (10**18 * 6)/136.9  # change this!
+# calculating lambda, mu and finding sample means for n = 5, n = 10 and n = 50
+lambda <- log(2)/949864255.2  
+N <- (10**18 * 6)/136.9
 mu <- N * lambda
 K <- 1e3
 n1 <- 5
@@ -196,11 +216,12 @@ sample_means3 <- colMeans(matrix(rpois(n3*K, lambda = mu), nrow=n3))
 #### Next, calculate the parameters of the standard normal approximation
 
 ```{r}
-mu1 <- mean(sample_means1)# change this!
-sigma1 <- sd(sample_means1)# change this!
-mu2 <- mean(sample_means2)# change this!
+# calculating mean and standart deviation of sample means 
+mu1 <- mean(sample_means1)
+sigma1 <- sd(sample_means1)
+mu2 <- mean(sample_means2)
 sigma2 <- sd(sample_means2)
-mu3 <- mean(sample_means3)# change this!
+mu3 <- mean(sample_means3)
 sigma3 <- sd(sample_means3)
 ```
 
@@ -216,7 +237,6 @@ plot(Fs_1,
      lwd = 2,
      main = "Comparison of ecdf and cdf")
 curve(pnorm(x, mean = mu1, sd = sigma1), col = "red", lwd = 2, add = TRUE)
-
 ```
 
 ```{r}
@@ -246,6 +266,7 @@ curve(pnorm(x, mean = mu3, sd = sigma3), col = "red", lwd = 2, add = TRUE)
 **Next, proceed with all the remaining steps**
 
 ```{r}
+# calculatng the maximum difference between two c.d.f.'s
 x <- seq(min(sample_means1),max(sample_means1), by = .01)
 max(abs(Fs_1(x)-pnorm(x,mean = mean(sample_means1), sd = sd(sample_means1))))
 x <- seq(min(sample_means2),max(sample_means2), by = .01)
@@ -254,9 +275,11 @@ x <- seq(min(sample_means1),max(sample_means1), by = .01)
 max(abs(Fs_3(x)-pnorm(x,mean = mean(sample_means3), sd = sd(sample_means3))))
 ```
 
+**Considering cases n = 5, n = 10, n = 50. Here we can see that as n becomes larger the difference between c.d.f and e.c.d.f. becomes smaller. From the plots we can see that the e.c.d.f. becomes more and more similar to the c.d.f.**
+
 ```{r}
-lambda <- log(2)/949864255.2  # change this!
-N <- (10**18 * 6)/136.9  # change this!
+lambda <- log(2)/949864255.2
+N <- (10**18 * 6)/136.9 
 K <- 1000
 n <- 5
 mu <- N * lambda
