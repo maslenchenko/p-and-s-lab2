@@ -207,7 +207,9 @@ h <- hist(temp,
      xlim=c(0,4),
      ylim = c(0, 10000),
      col = 'blue',
-     border = 'black')
+     border = 'black',
+     breaks = 6)
+text(h$mids,h$counts,labels=h$counts, adj=c(0.5, -0.5))
 ```
 
 **Do not forget to include several sentences summarizing your work and the conclusions you have made!**
@@ -571,6 +573,73 @@ N \le 5
 $$
 
 As we can see the result are similar.
+
+**Task 3.2**
+
+```{r}
+num = 100
+sample_means4 <- colMeans(matrix(rexp(num*K, rate = nu1), nrow=num))
+S = sum(sample_means4[1:100])
+```
+
+**Markov bounds**
+
+```{r}
+
+time = 1
+prob = 0.95
+
+Markov_num = num / (prob * nu1 * time)
+
+Markov_num #Upper bound
+
+```
+**Chebyshev bound**
+
+```{r}
+
+Chebyshev_num = (num * prob + sqrt(num * prob - prob * prob)) / (nu1 * time * prob)
+Chebyshev_num #Upper bound
+```
+
+**Central Limit Theorem**
+We take our number(CLT_num) to be minimum in this case 1. Then we calculate normal distribution and check wether it is less then the probability of 0.05, as 1 - ND needs to be greater than 0.95.
+
+```{r}
+CLT_num = 1
+while(TRUE){
+  flag = pnorm((time - (num / (nu1 * CLT_num))) / (sqrt(num) / (nu1 * CLT_num)))
+  if (flag < 0.05){
+    CLT_num = CLT_num + 1
+  }
+  else{
+    break
+  }
+}
+CLT_num = CLT_num - 1
+CLT_num
+```
+**Simulation of S**
+
+```{r}
+new_S = sum(rexp(100, rate = CLT_num * nu1))
+new_S
+
+```
+
+**Repeat k-times**
+
+```{r}
+sums = colSums(matrix(rexp(100*count, rate = CLT_num * nu1), nrow = 100))
+```
+
+**Estimation of probability that location is safe(Greater than 0.95)**
+
+```{r}
+mean(sums >= 1)
+```
+
+
 
 **Do not forget to include several sentences summarizing your work and the conclusions you have made!**
 
