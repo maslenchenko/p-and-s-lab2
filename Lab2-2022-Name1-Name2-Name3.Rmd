@@ -150,8 +150,8 @@ messages[4,]
 codewords <- (messages %*% G) %% 2
 received <- errors_generator(codewords)
 decoded <- decoding(received)
-measurament_error <- evaluate(messages,decoded)
-measurament_error
+accuracy<- evaluate(messages,decoded)
+accuracy
 ```
 
 **Do not forget to include several sentences summarizing your work and the conclusions you have made!**
@@ -173,13 +173,12 @@ measurament_error
     -   consider cases $n = 5$, $n = 10$, $n=50$ and comment on the results.\
 3.  Calculate the largest possible value of $n$, for which the total number of decays in one second is less than $8 \times 10^8$ with probability at least $0.95$. To this end,
     -   obtain the theoretical bound on $n$ using Markov inequality, Chernoff bound and Central Limit Theorem, and compare the results;\
+
     -   simulate the realization $x_1,x_2,\dots,x_n$ of the $X_i$ and calculate the sum $s=x_1 + \cdots +x_n$;
+
     -   repeat this $K$ times to get the sample $\mathbf{s}=(s_1,\dots,s_K)$ of sums;
+
     -   calculate the number of elements of the sample which are less than critical value ($8 \times 10^8$) and calculate the empirical probability; comment whether it is close to the desired level $0.95$
-
-\# sample_means2 \<- colMeans(matrix(rpois(n2\*K, lambda = mu), nrow=n2))
-
-\# sample_means3 \<- colMeans(matrix(rpois(n3\*K, lambda = mu), nrow=n3))
 
 ```{r}
 lambda <- log(2)/949864255.2  # change this!
@@ -258,10 +257,18 @@ max(abs(Fs_3(x)-pnorm(x,mean = mean(sample_means3), sd = sd(sample_means3))))
 ```{r}
 lambda <- log(2)/949864255.2  # change this!
 N <- (10**18 * 6)/136.9  # change this!
-K <- 1e3
+K <- 1000
 n <- 5
 mu <- N * lambda
 sum_values <- colSums(matrix(rpois(n*K, lambda = mu), nrow=n))
+sum(sum_values < 8*10**8)
+```
+
+```{r}
+markov_bound <- function(mu){
+  return (mu/(8*10**8))
+}
+markov_bound(mean(sum_values))
 ```
 
 **Do not forget to include several sentences summarizing your work and the conclusions you have made!**
@@ -287,31 +294,72 @@ sum_values <- colSums(matrix(rpois(n*K, lambda = mu), nrow=n))
 
 #### First, generate samples an sample means:
 
+sample_means \<- colMeans(matrix(rexp(n\*K, rate = 1/nu1), nrow=n))
+
 ```{r}
 nu1 <- 20  # change this!
 K <- 1e3
-n <- 50
-sample_means <- colMeans(matrix(rexp(n*K, rate = nu1), nrow=n))
+n1 <- 5
+n2 <- 10
+n3 <- 50
+sample_means1 <- colMeans(matrix(rexp(n1*K, rate = nu1), nrow=n1))
+sample_means2 <- colMeans(matrix(rexp(n2*K, rate = nu1), nrow=n2))
+sample_means3 <- colMeans(matrix(rexp(n3*K, rate = nu1), nrow=n3))
 ```
 
 #### Next, calculate the parameters of the standard normal approximation
 
 ```{r}
-mu <- 1/nu1    # change this!
-sigma <- ((1/nu1**2)/n)**(1/2)    # change this!
+mu1 <- mean(sample_means1)# change this!
+sigma1 <- sd(sample_means1)  
+mu2 <- mean(sample_means2)# change this!
+sigma2 <- sd(sample_means2)
+mu3 <- mean(sample_means3)# change this!
+sigma3 <- sd(sample_means3) # change this!
 ```
 
-#### We can now plot ecdf and cdf
+#### We can now plot ecdf and cdf2
 
 ```{r}
-xlims <- c(mu-3*sigma,mu+3*sigma)
-Fs <- ecdf(sample_means)
-plot(Fs, 
-     xlim = xlims, 
+xlims_1 <- c(mu1-3*sigma1,mu1+3*sigma1)
+Fs_1 <- ecdf(sample_means1)
+plot(Fs_1, 
+     xlim = xlims_1, 
      col = "blue",
      lwd = 2,
      main = "Comparison of ecdf and cdf")
-curve(pnorm(x, mean = mu, sd = sigma), col = "red", lwd = 2, add = TRUE)
+curve(pnorm(x, mean = mu1, sd = sigma1), col = "red", lwd = 2, add = TRUE)
+```
+
+```{r}
+xlims_2 <- c(mu2-3*sigma2,mu2+3*sigma2)
+Fs_2 <- ecdf(sample_means2)
+plot(Fs_2, 
+     xlim = xlims_2, 
+     col = "blue",
+     lwd = 2,
+     main = "Comparison of ecdf and cdf")
+curve(pnorm(x, mean = mu2, sd = sigma2), col = "red", lwd = 2, add = TRUE)
+```
+
+```{r}
+xlims_3 <- c(mu3-3*sigma3,mu3+3*sigma3)
+Fs_3 <- ecdf(sample_means3)
+plot(Fs_3, 
+     xlim = xlims_3, 
+     col = "blue",
+     lwd = 2,
+     main = "Comparison of ecdf and cdf")
+curve(pnorm(x, mean = mu3, sd = sigma3), col = "red", lwd = 2, add = TRUE)
+```
+
+```{r}
+x <- seq(min(sample_means1),max(sample_means1), by = .01)
+max(abs(Fs_1(x)-pnorm(x,mean = mean(sample_means1), sd = sd(sample_means1))))
+x <- seq(min(sample_means2),max(sample_means2), by = .01)
+max(abs(Fs_2(x)-pnorm(x,mean = mean(sample_means2), sd = sd(sample_means2))))
+x <- seq(min(sample_means1),max(sample_means1), by = .01)
+max(abs(Fs_3(x)-pnorm(x,mean = mean(sample_means3), sd = sd(sample_means3))))
 ```
 
 **Next, proceed with all the remaining steps**
