@@ -1,6 +1,6 @@
 ---
 title: 'P&S-2022: Lab assignment 2'
-author: "Sofiya Folvarochna, Maslenchenko Oleksandra, Andrea Kozlovskyi"
+author: "Sofiia Folvarochna, Maslenchenko Oleksandra, Andrea Kozlovskyi"
 output:
   html_document:
     df_print: paged
